@@ -65,3 +65,16 @@
     feedback: (string-ascii 200)
   }
 )
+
+;; Educational Resources
+(define-map MentalHealthResources
+  (string-ascii 50)
+  {
+    title: (string-ascii 100),
+    resource-type: (string-ascii 20), ;; video, article, guide, etc.
+    content-hash: (buff 32),          ;; IPFS or other distributed hash
+    creator: principal,
+    votes: uint,
+    verified: bool
+  }
+)
