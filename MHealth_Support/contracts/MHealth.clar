@@ -78,3 +78,18 @@
     verified: bool
   }
 )
+
+;; Community Events
+(define-map CommunityEvents
+  uint
+  {
+    event-name: (string-ascii 100),
+    event-type: (string-ascii 50),    ;; workshop, group session, etc.
+    organizer: principal,
+    max-participants: uint,
+    current-participants: uint,
+    event-date: uint,
+    location-hash: (buff 32),         ;; encrypted location data
+    description: (string-ascii 200)
+  }
+)
