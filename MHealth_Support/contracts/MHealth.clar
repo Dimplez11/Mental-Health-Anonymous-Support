@@ -93,3 +93,17 @@
     description: (string-ascii 200)
   }
 )
+
+;; Group Support Sessions
+(define-map GroupSessions
+  uint
+  {
+    session-name: (string-ascii 100),
+    facilitator: principal,
+    participants: (list 20 principal),
+    topic: (string-ascii 100),
+    status: (string-ascii 20),
+    scheduled-time: uint,
+    max-capacity: uint
+  }
+)
