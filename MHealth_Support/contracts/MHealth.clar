@@ -244,3 +244,47 @@
     (ok true)
   )
 )
+
+
+;; Create Educational Resource
+(define-public (add-mental-health-resource
+  (resource-id (string-ascii 50))
+  (title (string-ascii 100))
+  (resource-type (string-ascii 20))
+  (content-hash (buff 32))
+)
+  (let
+    (
+      (member (unwrap! (map-get? Members tx-sender) ERR-NOT-MEMBER))
+      (resource-exists (map-get? MentalHealthResources resource-id))
+    )
+    
+    (asserts! (get is-verified member) ERR-UNAUTHORIZED)
+    (asserts! (is-none resource-exists) ERR-RESOURCE-EXISTS)
+    
+    (map-set MentalHealthResources
+      resource-id
+      {
+        title: title,
+        resource-type: resource-type,
+        content-hash: content-hash,
+        creator: tx-sender,
+        votes: u0,
+        verified: (>= (get member-tier member) u4) ;; Auto-verify from trusted members
+      }
+    )
+    
+    ;; Increment resource counter
+    (var-set resource-counter (+ (var-get resource-counter) u1))
+    
+    ;; Add reputation for contribution
+    (map-set Members
+      tx-sender
+      (merge member {
+        reputation-score: (+ (get reputation-score member) u50)
+      })
+    )
+    
+    (ok true)
+  )
+)
