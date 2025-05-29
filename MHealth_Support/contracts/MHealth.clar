@@ -116,3 +116,40 @@
 (define-data-var event-counter uint u0)             ;; NEW: counter for events
 (define-data-var group-session-counter uint u0)     ;; NEW: counter for group sessions
 (define-data-var nft-counter uint u0)               ;; NEW: counter for NFTs
+
+;; Emergency Support Request
+(define-public (create-emergency-support-request 
+  (request-type (string-ascii 50))
+)
+  (let 
+    (
+      (request-id (var-get support-request-counter))
+      (member (unwrap! (map-get? Members tx-sender) ERR-NOT-MEMBER))
+      (emergency-fund (var-get emergency-support-fund))
+    )
+    (asserts! (get is-verified member) ERR-UNAUTHORIZED)
+    
+    ;; Check if emergency fund is sufficient
+    (asserts! (> emergency-fund u0) ERR-INSUFFICIENT-EMERGENCY-FUND)
+    
+    (map-set SupportRequests 
+      request-id 
+      {
+        requester: tx-sender,
+        request-type: request-type,
+        anonymity-level: u3, ;; Highest anonymity
+        status: "EMERGENCY_PENDING",
+        assigned-supporter: none,
+        emergency-flag: true,
+        interaction-logs: (list),
+        creation-time: block-height,
+        resolution-time: none
+      }
+    )
+
+    ;; Reduce emergency fund
+    (var-set emergency-support-fund (- emergency-fund u100))
+    (var-set support-request-counter (+ request-id u1))
+    (ok request-id)
+  )
+)
