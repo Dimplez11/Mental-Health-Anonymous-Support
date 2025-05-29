@@ -40,3 +40,19 @@
     nft-token-ids: (list 5 uint)      ;; NEW: owned support NFTs
   }
 )
+
+;; Support Requests
+(define-map SupportRequests
+  uint
+  {
+    requester: principal,
+    request-type: (string-ascii 50),
+    anonymity-level: uint,
+    status: (string-ascii 20),
+    assigned-supporter: (optional principal),
+    emergency-flag: bool,
+    interaction-logs: (list 10 (string-ascii 100)),
+    creation-time: uint,            ;; NEW: timestamp when created
+    resolution-time: (optional uint) ;; NEW: timestamp when resolved
+  }
+)
