@@ -56,3 +56,12 @@
     resolution-time: (optional uint) ;; NEW: timestamp when resolved
   }
 )
+
+;; Support Interaction Ratings
+(define-map SupportInteractionRatings
+  {request-id: uint, rater: principal}
+  {
+    rating: uint,
+    feedback: (string-ascii 200)
+  }
+)
