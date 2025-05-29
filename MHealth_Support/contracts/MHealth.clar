@@ -21,3 +21,22 @@
 (define-constant ERR-RESOURCE-EXISTS (err u116))
 (define-constant ERR-EVENT-FULL (err u117))
 (define-constant ERR-INVALID-NFT-OWNERSHIP (err u118))
+
+;; Member Storage
+(define-map Members
+  principal
+  {
+    is-verified: bool,
+    support-credits: uint,
+    total-contributions: uint,
+    support-ratings: (list 10 uint),
+    average-rating: uint,
+    specializations: (list 5 (string-ascii 50)),
+    last-active: uint,
+    reputation-score: uint,           ;; NEW: reputation score based on activities
+    support-sessions-completed: uint, ;; NEW: track completed sessions
+    member-tier: uint,                ;; NEW: member tier system (1-5)
+    badges: (list 10 (string-ascii 30)), ;; NEW: achievement badges
+    nft-token-ids: (list 5 uint)      ;; NEW: owned support NFTs
+  }
+)
