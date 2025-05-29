@@ -107,3 +107,12 @@
     max-capacity: uint
   }
 )
+
+;; Global counters and variables
+(define-data-var total-members uint u0)
+(define-data-var support-request-counter uint u0)
+(define-data-var emergency-support-fund uint u1000) ;; Initial emergency fund
+(define-data-var resource-counter uint u0)          ;; NEW: counter for resources
+(define-data-var event-counter uint u0)             ;; NEW: counter for events
+(define-data-var group-session-counter uint u0)     ;; NEW: counter for group sessions
+(define-data-var nft-counter uint u0)               ;; NEW: counter for NFTs
