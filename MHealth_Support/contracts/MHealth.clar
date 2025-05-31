@@ -415,4 +415,38 @@
   )
 )
 
+;; Join Group Session
+(define-public (join-group-session
+  (session-id uint)
+)
+  (let
+    (
+      (session (unwrap! (map-get? GroupSessions session-id) ERR-SUPPORT-REQUEST-NOT-FOUND))
+      (member-data (unwrap! (map-get? Members tx-sender) ERR-NOT-MEMBER))
+      (current-participants (get participants session))
+    )
+    
+    ;; Verify session is open and not full
+    (asserts! (is-eq (get status session) "SCHEDULED") ERR-UNAUTHORIZED)
+    (asserts! (< (len current-participants) (get max-capacity session)) ERR-EVENT-FULL)
+    
+    ;; Add member to participants list
+    (map-set GroupSessions
+      session-id
+      (merge session {
+        participants: (unwrap! (as-max-len? (append current-participants tx-sender) u20) ERR-MAX-LEN-REACHED)
+      })
+    )
+    
+    ;; Update member's activity timestamp
+    (map-set Members
+      tx-sender
+      (merge member-data {
+        last-active: block-height
+      })
+    )
+    
+    (ok true)
+  )
+)
 
