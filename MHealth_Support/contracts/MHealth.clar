@@ -450,3 +450,20 @@
   )
 )
 
+;; Updated Read-Only Functions
+
+;; View Member Profile
+(define-read-only (get-member-profile (member-address principal))
+  (map-get? Members member-address)
+)
+
+;; Get Mental Health Resources by Type
+(define-read-only (get-resources-by-type (resource-type (string-ascii 20)))
+  (filter
+    (lambda (resource-entry)
+      (is-eq (get resource-type (get resource-entry)) resource-type)
+    )
+    (map-entries MentalHealthResources)
+  )
+)
+
