@@ -336,3 +336,35 @@
     (ok event-id)
   )
 )
+
+;; NEW: Create Support NFT Badge
+(define-public (mint-support-nft
+  (achievement (string-ascii 30))
+  (recipient principal)
+)
+  (let
+    (
+      (nft-id (var-get nft-counter))
+      (contract-owner-check (asserts! (is-eq tx-sender CONTRACT-OWNER) ERR-UNAUTHORIZED))
+      (recipient-data (unwrap! (map-get? Members recipient) ERR-NOT-MEMBER))
+      (current-badges (get badges recipient-data))
+      (current-nfts (get nft-token-ids recipient-data))
+    )
+    
+    ;; Add badge to member's profile
+    (map-set Members
+      recipient
+      (merge recipient-data {
+        badges: (unwrap! (as-max-len? (append current-badges achievement) u10) ERR-MAX-LEN-REACHED),
+        nft-token-ids: (unwrap! (as-max-len? (append current-nfts nft-id) u5) ERR-MAX-LEN-REACHED),
+        reputation-score: (+ (get reputation-score recipient-data) u200)
+      })
+    )
+    
+    ;; Increment NFT counter
+    (var-set nft-counter (+ nft-id u1))
+    
+    (ok nft-id)
+  )
+)
+
