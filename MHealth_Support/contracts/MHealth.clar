@@ -467,3 +467,22 @@
   )
 )
 
+;; Get Upcoming Community Events
+(define-read-only (get-upcoming-events (current-time uint))
+  (filter
+    (lambda (event-entry)
+      (> (get event-date (get event-entry)) current-time)
+    )
+    (map-entries CommunityEvents)
+  )
+)
+
+;; Get Group Sessions by Topic
+(define-read-only (get-sessions-by-topic (topic-search (string-ascii 100)))
+  (filter
+    (lambda (session-entry)
+      (is-eq (get topic (get session-entry)) topic-search)
+    )
+    (map-entries GroupSessions)
+  )
+)
