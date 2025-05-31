@@ -368,3 +368,51 @@
   )
 )
 
+
+;; Create Group Support Session
+(define-public (create-group-session
+  (session-name (string-ascii 100))
+  (topic (string-ascii 100))
+  (scheduled-time uint)
+  (max-capacity uint)
+)
+  (let
+    (
+      (session-id (var-get group-session-counter))
+      (facilitator-data (unwrap! (map-get? Members tx-sender) ERR-NOT-MEMBER))
+    )
+    
+    ;; Verify facilitator qualifications
+    (asserts! (get is-verified facilitator-data) ERR-UNAUTHORIZED)
+    (asserts! (>= (get member-tier facilitator-data) u4) ERR-UNAUTHORIZED) ;; Minimum tier 4 to facilitate
+    
+    ;; Create new group session
+    (map-set GroupSessions
+      session-id
+      {
+        session-name: session-name,
+        facilitator: tx-sender,
+        participants: (list tx-sender), ;; Facilitator is first participant
+        topic: topic,
+        status: "SCHEDULED",
+        scheduled-time: scheduled-time,
+        max-capacity: max-capacity
+      }
+    )
+    
+    ;; Update session counter
+    (var-set group-session-counter (+ session-id u1))
+    
+    ;; Update facilitator's reputation
+    (map-set Members
+      tx-sender
+      (merge facilitator-data {
+        reputation-score: (+ (get reputation-score facilitator-data) u75)
+      })
+    )
+    
+    (ok session-id)
+  )
+)
+
+
