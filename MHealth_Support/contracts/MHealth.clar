@@ -288,3 +288,51 @@
     (ok true)
   )
 )
+
+
+;; Organize Community Event
+(define-public (create-community-event
+  (event-name (string-ascii 100))
+  (event-type (string-ascii 50))
+  (max-participants uint)
+  (event-date uint)
+  (location-hash (buff 32))
+  (description (string-ascii 200))
+)
+  (let
+    (
+      (event-id (var-get event-counter))
+      (member (unwrap! (map-get? Members tx-sender) ERR-NOT-MEMBER))
+    )
+    
+    (asserts! (get is-verified member) ERR-UNAUTHORIZED)
+    (asserts! (>= (get member-tier member) u3) ERR-UNAUTHORIZED) ;; Minimum tier 3 to organize events
+    
+    (map-set CommunityEvents
+      event-id
+      {
+        event-name: event-name,
+        event-type: event-type,
+        organizer: tx-sender,
+        max-participants: max-participants,
+        current-participants: u1, ;; Organizer counts as first participant
+        event-date: event-date,
+        location-hash: location-hash,
+        description: description
+      }
+    )
+    
+    ;; Update event counter
+    (var-set event-counter (+ event-id u1))
+    
+    ;; Update organizer's reputation
+    (map-set Members
+      tx-sender
+      (merge member {
+        reputation-score: (+ (get reputation-score member) u100)
+      })
+    )
+    
+    (ok event-id)
+  )
+)
