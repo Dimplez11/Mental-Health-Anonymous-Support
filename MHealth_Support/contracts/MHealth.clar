@@ -486,3 +486,15 @@
     (map-entries GroupSessions)
   )
 )
+
+;; Get Network Statistics
+(define-read-only (get-network-statistics)
+  {
+    total-members: (var-get total-members),
+    total-support-requests: (var-get support-request-counter),
+    emergency-fund-balance: (var-get emergency-support-fund),
+    total-resources: (var-get resource-counter),
+    total-events: (var-get event-counter),
+    total-group-sessions: (var-get group-session-counter)
+  }
+)
